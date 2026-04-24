@@ -1,0 +1,46 @@
+### Experiment 1: Connection Timeout Test
+- Date: 2026-02-26
+- Modification: Changed 'timeout' from 5 to 0.001.
+- Purpose: Simulate a slow network or unresponsive server.
+- Error Log: 
+❌ Error: HTTPSConnectionPool(host='jsonplaceholder.typicode.com', port=443): Max retries exceeded with url: /posts/1 (Caused by ConnectTimeoutError(<HTTPSConnection...>, 'Connection to jsonplaceholder.typicode.com timed out. (connect timeout=0.001)'))
+- Conclusion: Timeout error caught, script didn’t crash.
+
+
+### Experiment 2: JSON Parsing Failure Test
+- Date: 2026-02-26
+- Modification: Requested "https://www.google.com" instead of the API endpoint.
+- Purpose: Test handling of non-JSON response (HTML) with Status 200.
+- Error Log: 
+[Status Code]: 200
+❌ Error: Expecting value: line 1 column 1 (char 0)
+- Conclusion: 200 OK but JSON parsing still failed.
+
+
+### Experiment 3: HTTP Error Handling with raise_for_status()
+- Date: 2026-02-27
+- Modification: Added 'response.raise_for_status()' and requested a non-existent ID (9999).
+- Purpose: To observe how raise_for_status() handles HTTP client errors (4xx).
+- Error Log: 
+❌ Error: 404 Client Error: Not Found for url: https://jsonplaceholder.typicode.com/posts/9999
+- Conclusion: 404 error raised by raise_for_status().
+
+
+### Experiment 4: Connection Failure (Invalid Domain)
+- Date: 2026-02-27
+- Modification: Changed 'url' to a non-existent domain ("https://nonexistent-domain-xyz-123.com").
+- Purpose: To observe the exception raised when DNS resolution fails.
+- Error Log: 
+❌ Error: HTTPSConnectionPool(host='nonexistent-domain-xyz-123.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("... Failed to resolve ... [Errno 11001] getaddrinfo failed"))
+- Conclusion: Connection error happens before getting any response.
+
+
+### Experiment 5: Exception Refactoring & Validation
+- Date: 2026-03-03
+- Modification: Refactored error handling by categorizing specific exceptions (Timeout, HTTPError, ConnectionError, ValueError) and removed redundant 'if' statements.
+- Purpose: To ensure clean code logic and detailed diagnostic visibility by including exception objects (as e).
+- Observations: 
+  1. Input ID 1: Status Code 200 - Success message and title parsed correctly.
+  2. Input ID 9999: Captured as 🚫 HTTP Error (404 Not Found) - Error type clearly identified.
+  3. Set timeout=0.001: Captured as ⏱️ Timeout Error - Handled gracefully with specific error details.
+- Conclusion: Different errors now show different messages.
